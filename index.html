@@ -172,6 +172,41 @@
               class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-all text-sm">
           </div>
 
+          <!-- House Selection -->
+          <div>
+            <label class="block text-sm font-semibold text-slate-800 mb-2">
+              What House are you in? 🏰 <span class="text-rose-500">*</span>
+            </label>
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+              <label class="flex flex-col items-center justify-center p-3.5 rounded-xl border border-slate-200 hover:border-brand-300 hover:bg-brand-50/40 cursor-pointer transition-all text-center">
+                <input type="radio" name="house" value="BITA" required class="text-brand-600 focus:ring-brand-500 mb-1.5">
+                <span class="text-sm font-bold text-slate-800">BITA</span>
+              </label>
+              <label class="flex flex-col items-center justify-center p-3.5 rounded-xl border border-slate-200 hover:border-brand-300 hover:bg-brand-50/40 cursor-pointer transition-all text-center">
+                <input type="radio" name="house" value="BGW" required class="text-brand-600 focus:ring-brand-500 mb-1.5">
+                <span class="text-sm font-bold text-slate-800">BGW</span>
+              </label>
+              <label class="flex flex-col items-center justify-center p-3.5 rounded-xl border border-slate-200 hover:border-brand-300 hover:bg-brand-50/40 cursor-pointer transition-all text-center">
+                <input type="radio" name="house" value="Haifa" required class="text-brand-600 focus:ring-brand-500 mb-1.5">
+                <span class="text-sm font-bold text-slate-800">Haifa</span>
+              </label>
+              <label class="flex flex-col items-center justify-center p-3.5 rounded-xl border border-slate-200 hover:border-brand-300 hover:bg-brand-50/40 cursor-pointer transition-all text-center">
+                <input type="radio" name="house" value="Hebrew U" required class="text-brand-600 focus:ring-brand-500 mb-1.5">
+                <span class="text-sm font-bold text-slate-800">Hebrew U</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Locker Combination -->
+          <div>
+            <label class="block text-sm font-semibold text-slate-800 mb-1" for="lockerCombination">
+              What is your locker combination? 🔐
+            </label>
+            <input type="text" id="lockerCombination" name="lockerCombination" placeholder="e.g. 24 - 12 - 38 (and locker number if you know it!)"
+              class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-all text-sm">
+            <p class="text-xs text-slate-400 mt-1">Super handy for your teacher to have in case your locker gets jammed!</p>
+          </div>
+
           <!-- Birthday -->
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
@@ -533,7 +568,7 @@
        Paste your Google Apps Script Web App URL below to automatically save all
        responses directly to your Google Sheet!
        ========================================================================== */
-    const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbyQ1qvSuUC18WoC0ixSnjA5IdC5lhZ-lSiQXAXRAWzMbaOLnlPAt0ZUA1Rn1zr0bz1Sig/exec"; 
+    const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbyD03YitkVYVxrp652A0vmjJyq-kt_XeuP9b4lT8uW8opO5G84CBVWhjnAdEZjb1lxiIw/exec"; 
 
     // State management
     let currentStep = 0;
@@ -696,6 +731,8 @@
       const studentSubmission = {
         fullName: formData.get('fullName') || '',
         preferredName: formData.get('preferredName') || '',
+        house: formData.get('house') || '',
+        lockerCombination: formData.get('lockerCombination') || '',
         birthMonth: formData.get('birthMonth') || '',
         birthDay: formData.get('birthDay') || '',
         favSubjects: favSubjects,
