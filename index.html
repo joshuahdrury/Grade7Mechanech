@@ -202,9 +202,9 @@
             <label class="block text-sm font-semibold text-slate-800 mb-1" for="lockerCombination">
               What is your locker combination? 🔐
             </label>
-            <input type="text" id="lockerCombination" name="lockerCombination" placeholder="e.g. 24 - 12 - 38 (and locker number if you know it!)"
+            <input type="text" id="lockerCombination" name="lockerCombination" placeholder="e.g. 24 - 12 - 38"
               class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-all text-sm">
-            <p class="text-xs text-slate-400 mt-1">Super handy for your teacher to have in case your locker gets jammed!</p>
+            <p class="text-xs text-slate-400 mt-1">Helpful for your teacher if your locker ever jams!</p>
           </div>
 
           <!-- Birthday -->
@@ -314,7 +314,7 @@
             </label>
             <div class="space-y-2.5">
               <label class="flex items-center gap-3 p-3 rounded-xl border border-slate-200 hover:bg-indigo-50/30 cursor-pointer transition-all">
-                <input type="radio" name="learningStyle" value="Hands-on & Building" class="text-indigo-600 focus:ring-indigo-500">
+                <input type="radio" name="learningStyle" value="Hands-on & Experiments" class="text-indigo-600 focus:ring-indigo-500">
                 <div>
                   <div class="text-sm font-semibold text-slate-800">🛠️ Hands-on & Experiments</div>
                   <div class="text-xs text-slate-500">Building projects, doing labs, moving around</div>
@@ -516,14 +516,14 @@
     </form>
 
     <!-- Completion / Thank You Screen (Hidden Initially) -->
-    <div id="successCard" class="hidden bg-white rounded-3xl p-8 sm:p-12 border border-slate-200 shadow-xl text-center max-w-xl mx-auto my-6 animate-fade-in">
+    <div id="successCard" class="hidden bg-white rounded-3xl p-8 sm:p-12 border border-slate-200 shadow-xl text-center max-w-xl mx-auto my-6">
       <div class="w-20 h-20 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-5 text-4xl shadow-inner animate-bounce">
         🎉
       </div>
       <span class="inline-block bg-emerald-50 text-emerald-700 text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full mb-3">All Done!</span>
       <h2 class="text-3xl font-display font-extrabold text-slate-900">You're Officially In!</h2>
       <p class="text-slate-600 mt-2 text-sm sm:text-base leading-relaxed">
-        Thank you, <span id="submittedStudentName" class="font-bold text-slate-800">friend</span>! Your responses have been saved. We're going to have an incredible 7th grade year together.
+        Thank you, <span id="submittedStudentName" class="font-bold text-slate-800">friend</span>! Your responses have been recorded. We're going to have an incredible 7th grade year together.
       </p>
 
       <!-- Digital Grade 7 VIP Badge -->
@@ -564,11 +564,9 @@
 
   <script>
     /* ==========================================================================
-       TEACHER CONFIGURATION:
-       Paste your Google Apps Script Web App URL below to automatically save all
-       responses directly to your Google Sheet!
+       YOUR CONNECTED GOOGLE APPS SCRIPT WEB APP
        ========================================================================== */
-    const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbwkQhrZe1MXGTHrYGgDXkn7x1kyMYSOyK3dObNX8IZ1fqEEHSQjDw_dK4a22ieP9M18Vw/exec"; 
+    const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbwkQhrZe1MXGTHrYGgDXkn7x1kyMYSOyK3dObNX8IZ1fqEEHSQjDw_dK4a22ieP9M18Vw/exec";
 
     // State management
     let currentStep = 0;
@@ -594,7 +592,6 @@
     function updateStepView() {
       if (isSinglePageView) return;
 
-      // Toggle sections
       for (let i = 0; i < totalSteps; i++) {
         const sec = document.getElementById(`step-section-${i}`);
         const pill = document.getElementById(`pill-${i}`);
@@ -616,13 +613,11 @@
         }
       }
 
-      // Update progress bar
       const progress = Math.round(((currentStep + 1) / totalSteps) * 100);
       progressBar.style.width = `${progress}%`;
       progressPercentage.textContent = `${progress}% Complete`;
       stepCounter.textContent = `Section ${currentStep + 1} of ${totalSteps}`;
 
-      // Update button visibility
       prevBtn.disabled = currentStep === 0;
       if (currentStep === totalSteps - 1) {
         nextBtn.classList.add('hidden');
@@ -632,7 +627,6 @@
         submitBtn.classList.add('hidden');
       }
 
-      // Smooth scroll to top of form
       window.scrollTo({ top: Math.max(0, form.offsetTop - 80), behavior: 'smooth' });
     }
 
@@ -647,11 +641,16 @@
           setTimeout(() => nameInput.classList.remove('border-rose-400', 'ring-2', 'ring-rose-200'), 2500);
           return false;
         }
+
+        const houseSelected = document.querySelector('input[name="house"]:checked');
+        if (!houseSelected) {
+          showToast('🏰 Please select your House!');
+          return false;
+        }
       }
       return true;
     }
 
-    // Step navigation event handlers
     nextBtn.addEventListener('click', () => {
       if (validateStep(currentStep)) {
         if (currentStep < totalSteps - 1) {
@@ -668,7 +667,6 @@
       }
     });
 
-    // Allow clicking on step pills
     for (let i = 0; i < totalSteps; i++) {
       const pill = document.getElementById(`pill-${i}`);
       if (pill) {
@@ -682,7 +680,6 @@
       }
     }
 
-    // Toggle between Single Page and Multi-Step Wizard
     viewToggleBtn.addEventListener('click', () => {
       isSinglePageView = !isSinglePageView;
       if (isSinglePageView) {
@@ -692,7 +689,6 @@
         nextBtn.classList.add('hidden');
         submitBtn.classList.remove('hidden');
 
-        // Show all sections
         for (let i = 0; i < totalSteps; i++) {
           const sec = document.getElementById(`step-section-${i}`);
           if (sec) sec.classList.remove('hidden');
@@ -711,21 +707,15 @@
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
 
-      // Check required name
-      const nameInput = document.getElementById('fullName');
-      if (!nameInput.value.trim()) {
+      if (!validateStep(0)) {
         currentStep = 0;
         updateStepView();
-        nameInput.focus();
-        showToast('⚠️ Please write your name first!');
         return;
       }
 
-      // Disable button and show spinner
       submitBtn.disabled = true;
       submitBtnLabel.textContent = "Saving responses... 🚀";
 
-      // Collect values
       const formData = new FormData(form);
       const favSubjects = formData.getAll('favSubjects');
       const studentSubmission = {
@@ -750,10 +740,10 @@
         teacherNote: formData.get('teacherNote') || ''
       };
 
-      // If Google Sheet URL is configured, post in real-time
-      if (GOOGLE_SHEET_URL && GOOGLE_SHEET_URL.trim().startsWith('http')) {
+      // Send directly to your Google Apps Script
+      if (GOOGLE_SHEET_URL && GOOGLE_SHEET_URL.startsWith('http')) {
         try {
-          await fetch(GOOGLE_SHEET_URL.trim(), {
+          await fetch(GOOGLE_SHEET_URL, {
             method: 'POST',
             mode: 'no-cors',
             headers: { 'Content-Type': 'text/plain;charset=utf-8' },
@@ -764,7 +754,6 @@
         }
       }
 
-      // Display customized success screen & VIP pass
       const displayName = studentSubmission.preferredName.trim() || studentSubmission.fullName;
       document.getElementById('submittedStudentName').textContent = displayName;
       document.getElementById('badgeStudentName').textContent = displayName;
@@ -775,11 +764,9 @@
       document.getElementById('heroCard').classList.add('hidden');
       successCard.classList.remove('hidden');
 
-      // Trigger Confetti celebration
       triggerConfetti();
       showToast('🎉 Survey submitted successfully!');
 
-      // Reset submit button state
       submitBtn.disabled = false;
       submitBtnLabel.textContent = "Submit Survey 🎉";
     });
@@ -808,7 +795,6 @@
       updateStepView();
     });
 
-    // Custom Toast function
     let toastTimeout;
     function showToast(message) {
       const toast = document.getElementById('customToast');
@@ -824,7 +810,6 @@
       }, 3000);
     }
 
-    // Initial render
     updateStepView();
   </script>
 </body>
