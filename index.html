@@ -533,7 +533,7 @@
        Paste your Google Apps Script Web App URL below to automatically save all
        responses directly to your Google Sheet!
        ========================================================================== */
-    const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbyQ1qvSuUC18WoC0ixSnjA5IdC5lhZ-lSiQXAXRAWzMbaOLnlPAt0ZUA1Rn1zr0bz1Sig/exec"; 
+    const GOOGLE_SHEET_URL = ""; 
 
     // State management
     let currentStep = 0;
@@ -719,7 +719,7 @@
           await fetch(GOOGLE_SHEET_URL.trim(), {
             method: 'POST',
             mode: 'no-cors',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
             body: JSON.stringify(studentSubmission)
           });
         } catch (err) {
