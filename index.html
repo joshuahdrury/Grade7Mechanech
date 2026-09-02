@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Welcome to Grade 7! First Day Check-In</title>
+  <!-- Google Fonts: Inter & Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@700;800&display=swap" rel="stylesheet">
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Canvas Confetti for Celebration -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            display: ['"Plus Jakarta Sans"', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              50: '#eff6ff',
+              100: '#dbeafe',
+              200: '#bfdbfe',
+              400: '#60a5fa',
+              500: '#3b82f6',
+              600: '#2563eb',
+              700: '#1d4ed8',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    /* Custom subtle animations */
+    @keyframes floatSlow {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-6px) rotate(1.5deg); }
+    }
+    .animate-float {
+      animation: floatSlow 3.5s ease-in-out infinite;
+    }
+    /* Custom scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #f1f5f9;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans min-h-screen antialiased flex flex-col justify-between selection:bg-brand-500 selection:text-white">
+
+  <!-- Top Navigation / Header -->
+  <header class="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-slate-200">
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <span class="text-2xl animate-float inline-block">🚀</span>
+        <div>
+          <h1 class="font-display font-extrabold text-lg text-slate-900 leading-tight">Grade 7 Crew</h1>
+          <p class="text-xs text-slate-500 hidden sm:block">First Day Getting-To-Know-You Check-In</p>
+        </div>
+      </div>
+
+      <!-- Quick View Toggle: Step-by-Step vs All-at-Once -->
+      <div class="flex items-center space-x-2">
+        <button id="viewToggleBtn" type="button" class="text-xs font-semibold px-3.5 py-1.5 rounded-full border border-slate-200 text-slate-600 hover:bg-slate-100 transition-colors flex items-center gap-1.5" title="Switch between Step Wizard and Single Page">
+          <svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+          <span id="viewToggleLabel">All Questions</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content Container -->
+  <main class="flex-grow max-w-3xl w-full mx-auto px-4 py-8 sm:py-10">
+
+    <!-- Welcome Hero Card -->
+    <div id="heroCard" class="relative overflow-hidden bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 rounded-3xl p-6 sm:p-8 text-white shadow-xl shadow-blue-500/10 mb-8 transition-all">
+      <div class="relative z-10">
+        <div class="inline-flex items-center gap-2 bg-white/20 backdrop-blur-md px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider mb-3">
+          <span>🎒 Day One Adventure</span>
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-300 animate-pulse"></span>
+          <span>Welcome Aboard!</span>
+        </div>
+        <h2 class="text-2xl sm:text-4xl font-extrabold font-display tracking-tight leading-tight">
+          Welcome to Grade 7! 👋
+        </h2>
+        <p class="mt-2 text-sm sm:text-base text-blue-100 max-w-xl leading-relaxed">
+          Middle school is going to be an awesome year. Take a few minutes to share what makes you you, how you learn best, and how we can make this your best school year yet!
+        </p>
+      </div>
+      <!-- Decorative background shapes -->
+      <div class="absolute -right-10 -bottom-10 w-48 h-48 bg-white/10 rounded-full blur-2xl pointer-events-none"></div>
+      <div class="absolute right-10 top-4 text-7xl opacity-20 select-none pointer-events-none">✨</div>
+    </div>
+
+    <!-- Progress Indicator (Wizard Mode) -->
+    <div id="progressContainer" class="mb-8 bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-sm transition-all">
+      <div class="flex items-center justify-between text-xs font-bold text-slate-500 mb-2">
+        <span id="stepCounter" class="text-brand-600 uppercase tracking-wide">Section 1 of 4</span>
+        <span id="progressPercentage" class="bg-brand-50 text-brand-700 px-2 py-0.5 rounded-full font-bold">25% Complete</span>
+      </div>
+      <div class="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden">
+        <div id="progressBar" class="bg-gradient-to-r from-blue-500 to-indigo-600 h-2.5 rounded-full transition-all duration-300" style="width: 25%"></div>
+      </div>
+      <!-- Step pills -->
+      <div class="grid grid-cols-4 gap-2 mt-4 text-center">
+        <div id="pill-0" class="step-pill cursor-pointer p-2 rounded-xl bg-blue-50 border border-blue-200 text-blue-700 font-semibold text-xs transition-all">
+          <span class="block text-sm">👤</span>
+          <span class="hidden sm:inline">The Basics</span>
+        </div>
+        <div id="pill-1" class="step-pill cursor-pointer p-2 rounded-xl bg-slate-50 border border-transparent text-slate-500 font-medium text-xs transition-all">
+          <span class="block text-sm">🧠</span>
+          <span class="hidden sm:inline">My Brain</span>
+        </div>
+        <div id="pill-2" class="step-pill cursor-pointer p-2 rounded-xl bg-slate-50 border border-transparent text-slate-500 font-medium text-xs transition-all">
+          <span class="block text-sm">🎮</span>
+          <span class="hidden sm:inline">Vibes & Fun</span>
+        </div>
+        <div id="pill-3" class="step-pill cursor-pointer p-2 rounded-xl bg-slate-50 border border-transparent text-slate-500 font-medium text-xs transition-all">
+          <span class="block text-sm">🎯</span>
+          <span class="hidden sm:inline">Looking Ahead</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Survey Form Container -->
+    <form id="grade7SurveyForm" novalidate class="space-y-6">
+
+      <!-- SECTION 1: THE BASICS -->
+      <section id="step-section-0" class="survey-section bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/80 shadow-sm transition-all">
+        <div class="flex items-center gap-3 mb-6 pb-4 border-b border-slate-100">
+          <div class="w-10 h-10 rounded-2xl bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-xl">
+            1
+          </div>
+          <div>
+            <h3 class="text-xl font-display font-bold text-slate-900">All About You</h3>
+            <p class="text-xs sm:text-sm text-slate-500">Let's make sure we have your name and birthday right!</p>
+          </div>
+        </div>
+
+        <div class="space-y-5">
+          <!-- Legal / First & Last Name -->
+          <div>
+            <label class="block text-sm font-semibold text-slate-800 mb-1" for="fullName">
+              What is your first and last name? <span class="text-rose-500">*</span>
+            </label>
+            <input type="text" id="fullName" name="fullName" required placeholder="e.g. Jordan Taylor"
+              class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-all text-sm">
+            <p class="text-xs text-slate-400 mt-1">As listed on school attendance records.</p>
+          </div>
+
+          <!-- Preferred Name / Nickname -->
+          <div>
+            <label class="block text-sm font-semibold text-slate-800 mb-1" for="preferredName">
+              What name or nickname do you prefer to be called in class?
+            </label>
+            <input type="text" id="preferredName" name="preferredName" placeholder="e.g. JT, Dani, Alex (or leave blank if same as above)"
+              class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-all text-sm">
+          </div>
+
+          <!-- Birthday -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-semibold text-slate-800 mb-1" for="birthMonth">
+                🎂 Birthday Month
+              </label>
+              <select id="birthMonth" name="birthMonth" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-brand-500 text-sm bg-white">
+                <option value="">Select month...</option>
+                <option value="January">January</option>
+                <option value="February">February</option>
+                <option value="March">March</option>
+                <option value="April">April</option>
+                <option value="May">May</option>
+                <option value="June">June</option>
+                <option value="July">July</option>
+                <option value="August">August</option>
+                <option value="September">September</option>
+                <option value="October">October</option>
+                <option value="November">November</option>
+                <option value="December">December</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-sm font-semibold text-slate-800 mb-1" for="birthDay">
+                Day
+              </label>
+              <input type="number" min="1" max="31" id="birthDay" name="birthDay" placeholder="Day (1-31)"
+                class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-brand-500 text-sm">
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 2: HOW MY BRAIN WORKS -->
+      <section id="step-section-1" class="survey-section bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/80 shadow-sm transition-all hidden">
+        <div class="flex items-center gap-3 mb-6 pb-4 border-b border-slate-100">
+          <div class="w-10 h-10 rounded-2xl bg-indigo-100 text-indigo-600 flex items-center justify-center font-bold text-xl">
+            2
+          </div>
+          <div>
+            <h3 class="text-xl font-display font-bold text-slate-900">How I Learn Best</h3>
+            <p class="text-xs sm:text-sm text-slate-500">Every student is different. Help me make class work best for you!</p>
+          </div>
+        </div>
+
+        <div class="space-y-6">
+          <!-- Favorite subjects -->
+          <div>
+            <label class="block text-sm font-semibold text-slate-800 mb-2">
+              Which subjects do you enjoy the most? <span class="text-xs font-normal text-slate-400">(Pick all that apply)</span>
+            </label>
+            <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5" id="favSubjectsGroup">
+              <label class="flex items-center gap-2 p-3 rounded-xl border border-slate-200 hover:border-indigo-300 hover:bg-indigo-50/40 cursor-pointer transition-all">
+                <input type="checkbox" name="favSubjects" value="Science" class="rounded text-indigo-600 focus:ring-indigo-500">
+                <span class="text-xs sm:text-sm font-medium text-slate-700">🔬 Science & STEM</span>
+              </label>
+              <label class="flex items-center gap-2 p-3 rounded-xl border border-slate-200 hover:border-indigo-300 hover:bg-indigo-50/40 cursor-pointer transition-all">
+                <input type="checkbox" name="favSubjects" value="Math" class="rounded text-indigo-600 focus:ring-indigo-500">
+                <span class="text-xs sm:text-sm font-medium text-slate-700">📐 Math</span>
+              </label>
+              <label class="flex items-center gap-2 p-3 rounded-xl border border-slate-200 hover:border-indigo-300 hover:bg-indigo-50/40 cursor-pointer transition-all">
+                <input type="checkbox" name="favSubjects" value="English" class="rounded text-indigo-600 focus:ring-indigo-500">
+                <span class="text-xs sm:text-sm font-medium text-slate-700">📚 Reading & Writing</span>
+              </label>
+              <label class="flex items-center gap-2 p-3 rounded-xl border border-slate-200 hover:border-indigo-300 hover:bg-indigo-50/40 cursor-pointer transition-all">
+                <input type="checkbox" name="favSubjects" value="History" class="rounded text-indigo-600 focus:ring-indigo-500">
+                <span class="text-xs sm:text-sm font-medium text-slate-700">🌍 History & Social</span>
+              </label>
+              <label class="flex items-center gap-2 p-3 rounded-xl border border-slate-200 hover:border-indigo-300 hover:bg-indigo-50/40 cursor-pointer transition-all">
+                <input type="checkbox" name="favSubjects" value="Art" class="rounded text-indigo-600 focus:ring-indigo-500">
+                <span class="text-xs sm:text-sm font-medium text-slate-700">🎨 Visual Art & Design</span>
+              </label>
+              <label class="flex items-center gap-2 p-3 rounded-xl border border-slate-200 hover:border-indigo-300 hover:bg-indigo-50/40 cursor-pointer transition-all">
+                <input type="checkbox" name="favSubjects" value="PhysEd" class="rounded text-indigo-600 focus:ring-indigo-500">
+                <span class="text-xs sm:text-sm font-medium text-slate-700">🏃 Gym / Phys Ed</span>
+              </label>
+              <label class="flex items-center gap-2 p-3 rounded-xl border border-slate-200 hover:border-indigo-300 hover:bg-indigo-50/40 cursor-pointer transition-all">
+                <input type="checkbox" name="favSubjects" value="Music" class="rounded text-indigo-600 focus:ring-indigo-500">
+                <span class="text-xs sm:text-sm font-medium text-slate-700">🎵 Music / Band</span>
+              </label>
+              <label class="flex items-center gap-2 p-3 rounded-xl border border-slate-200 hover:border-indigo-300 hover:bg-indigo-50/40 cursor-pointer transition-all">
+                <input type="checkbox" name="favSubjects" value="Computers" class="rounded text-indigo-600 focus:ring-indigo-500">
+                <span class="text-xs sm:text-sm font-medium text-slate-700">💻 Tech & Coding</span>
+              </label>
+              <label class="flex items-center gap-2 p-3 rounded-xl border border-slate-200 hover:border-indigo-300 hover:bg-indigo-50/40 cursor-pointer transition-all">
+                <input type="checkbox" name="favSubjects" value="Drama" class="rounded text-indigo-600 focus:ring-indigo-500">
+                <span class="text-xs sm:text-sm font-medium text-slate-700">🎭 Drama & Theater</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Challenging subject / topics -->
+          <div>
+            <label class="block text-sm font-semibold text-slate-800 mb-1" for="challengingSubject">
+              Which subject or topic feels most challenging or where do you like extra support?
+            </label>
+            <input type="text" id="challengingSubject" name="challengingSubject" placeholder="e.g. Fractions, memorizing dates, writing essays, science vocabulary..."
+              class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm">
+          </div>
+
+          <!-- Learning styles -->
+          <div>
+            <label class="block text-sm font-semibold text-slate-800 mb-2">
+              How do you understand new ideas best?
+            </label>
+            <div class="space-y-2.5">
+              <label class="flex items-center gap-3 p-3 rounded-xl border border-slate-200 hover:bg-indigo-50/30 cursor-pointer transition-all">
+                <input type="radio" name="learningStyle" value="Hands-on & Building" class="text-indigo-600 focus:ring-indigo-500">
+                <div>
+                  <div class="text-sm font-semibold text-slate-800">🛠️ Hands-on & Experiments</div>
+                  <div class="text-xs text-slate-500">Building projects, doing labs, moving around</div>
+                </div>
+              </label>
+              <label class="flex items-center gap-3 p-3 rounded-xl border border-slate-200 hover:bg-indigo-50/30 cursor-pointer transition-all">
+                <input type="radio" name="learningStyle" value="Visual Examples" class="text-indigo-600 focus:ring-indigo-500">
+                <div>
+                  <div class="text-sm font-semibold text-slate-800">👀 Visual Examples</div>
+                  <div class="text-xs text-slate-500">Videos, diagrams, charts, color-coded notes</div>
+                </div>
+              </label>
+              <label class="flex items-center gap-3 p-3 rounded-xl border border-slate-200 hover:bg-indigo-50/30 cursor-pointer transition-all">
+                <input type="radio" name="learningStyle" value="Talking it Through" class="text-indigo-600 focus:ring-indigo-500">
+                <div>
+                  <div class="text-sm font-semibold text-slate-800">🗣️ Talking it Through</div>
+                  <div class="text-xs text-slate-500">Partner discussions, group brainstorms, asking questions aloud</div>
+                </div>
+              </label>
+              <label class="flex items-center gap-3 p-3 rounded-xl border border-slate-200 hover:bg-indigo-50/30 cursor-pointer transition-all">
+                <input type="radio" name="learningStyle" value="Quiet Focus" class="text-indigo-600 focus:ring-indigo-500">
+                <div>
+                  <div class="text-sm font-semibold text-slate-800">📖 Quiet Focus</div>
+                  <div class="text-xs text-slate-500">Reading instructions carefully, step-by-step checklists</div>
+                </div>
+              </label>
+            </div>
+          </div>
+
+          <!-- Seating preference -->
+          <div>
+            <label class="block text-sm font-semibold text-slate-800 mb-2">
+              Classroom Seating Preference:
+            </label>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+              <label class="p-3 rounded-xl border border-slate-200 hover:border-indigo-300 cursor-pointer flex items-center gap-2">
+                <input type="radio" name="seating" value="Near the front/board" class="text-indigo-600">
+                <span class="text-xs sm:text-sm text-slate-700">Near the front/board</span>
+              </label>
+              <label class="p-3 rounded-xl border border-slate-200 hover:border-indigo-300 cursor-pointer flex items-center gap-2">
+                <input type="radio" name="seating" value="Right in the middle" class="text-indigo-600">
+                <span class="text-xs sm:text-sm text-slate-700">Right in the middle</span>
+              </label>
+              <label class="p-3 rounded-xl border border-slate-200 hover:border-indigo-300 cursor-pointer flex items-center gap-2">
+                <input type="radio" name="seating" value="Back or near window" class="text-indigo-600">
+                <span class="text-xs sm:text-sm text-slate-700">Back or near window</span>
+              </label>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 3: VIBES, HOBBIES & PASSIONS -->
+      <section id="step-section-2" class="survey-section bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/80 shadow-sm transition-all hidden">
+        <div class="flex items-center gap-3 mb-6 pb-4 border-b border-slate-100">
+          <div class="w-10 h-10 rounded-2xl bg-amber-100 text-amber-600 flex items-center justify-center font-bold text-xl">
+            3
+          </div>
+          <div>
+            <h3 class="text-xl font-display font-bold text-slate-900">Vibes, Passions & Fun</h3>
+            <p class="text-xs sm:text-sm text-slate-500">School is way better when we know what you're excited about!</p>
+          </div>
+        </div>
+
+        <div class="space-y-5">
+          <!-- Outside of school activities -->
+          <div>
+            <label class="block text-sm font-semibold text-slate-800 mb-1" for="hobbies">
+              What do you love doing outside of school? 🛹
+            </label>
+            <textarea id="hobbies" name="hobbies" rows="2" placeholder="e.g. Soccer, drawing anime/comics, Minecraft/Roblox, reading manga, playing guitar, skateboarding..."
+              class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-amber-500 text-sm resize-none"></textarea>
+          </div>
+
+          <!-- Current pop culture / favorites -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-semibold text-slate-800 mb-1" for="favoriteMedia">
+                🎧 Favorite Music / Artist / Songs:
+              </label>
+              <input type="text" id="favoriteMedia" name="favoriteMedia" placeholder="e.g. Taylor Swift, Olivia Rodrigo, Kendrick, K-Pop, Rock..."
+                class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-amber-500 text-sm">
+            </div>
+            <div>
+              <label class="block text-sm font-semibold text-slate-800 mb-1" for="favoriteGameMovie">
+                🎮 Favorite Game, Show, or Book:
+              </label>
+              <input type="text" id="favoriteGameMovie" name="favoriteGameMovie" placeholder="e.g. Zelda, Stranger Things, Percy Jackson, Fortnite..."
+                class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-amber-500 text-sm">
+            </div>
+          </div>
+
+          <!-- Fun Fact -->
+          <div>
+            <label class="block text-sm font-semibold text-slate-800 mb-1" for="funFact">
+              What is one cool or surprising fact about you? 🤹
+            </label>
+            <input type="text" id="funFact" name="funFact" placeholder="e.g. I have 4 guinea pigs, I can solve a Rubik's cube, I've lived in 3 countries..."
+              class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-amber-500 text-sm">
+          </div>
+
+          <!-- Superpower -->
+          <div>
+            <label class="block text-sm font-semibold text-slate-800 mb-1" for="dreamSuperpower">
+              If you could instantly have any superpower, what would it be? ⚡
+            </label>
+            <input type="text" id="dreamSuperpower" name="dreamSuperpower" placeholder="e.g. Teleportation so I never wake up early, speaking all animal languages..."
+              class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-amber-500 text-sm">
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 4: LOOKING AHEAD & TEACHER SUPPORT -->
+      <section id="step-section-3" class="survey-section bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/80 shadow-sm transition-all hidden">
+        <div class="flex items-center gap-3 mb-6 pb-4 border-b border-slate-100">
+          <div class="w-10 h-10 rounded-2xl bg-emerald-100 text-emerald-600 flex items-center justify-center font-bold text-xl">
+            4
+          </div>
+          <div>
+            <h3 class="text-xl font-display font-bold text-slate-900">Looking Ahead to Grade 7</h3>
+            <p class="text-xs sm:text-sm text-slate-500">Your goals, feelings, and how I can best support you this year.</p>
+          </div>
+        </div>
+
+        <div class="space-y-5">
+          <!-- Excited about -->
+          <div>
+            <label class="block text-sm font-semibold text-slate-800 mb-1" for="excitedAbout">
+              What are you most looking forward to or excited about in Grade 7? 🤩
+            </label>
+            <input type="text" id="excitedAbout" name="excitedAbout" placeholder="e.g. Lockers, switching classes, sports teams, field trips, making new friends..."
+              class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm">
+          </div>
+
+          <!-- Nervous about -->
+          <div>
+            <label class="block text-sm font-semibold text-slate-800 mb-1" for="nervousAbout">
+              Is there anything you feel a bit nervous or worried about? 💭
+            </label>
+            <input type="text" id="nervousAbout" name="nervousAbout" placeholder="e.g. Remembering combinations, homework load, getting lost, big tests..."
+              class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm">
+            <p class="text-xs text-slate-400 mt-1">Totally normal! Every 7th grader has something on their mind.</p>
+          </div>
+
+          <!-- When stressed / stuck -->
+          <div>
+            <label class="block text-sm font-semibold text-slate-800 mb-2">
+              When I feel overwhelmed or stuck, it helps me most if the teacher:
+            </label>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+              <label class="flex items-center gap-2.5 p-3 rounded-xl border border-slate-200 hover:bg-emerald-50/40 cursor-pointer transition-all">
+                <input type="radio" name="stressHelper" value="Checks in privately and quietly" class="text-emerald-600">
+                <span class="text-xs sm:text-sm text-slate-700">Checks in privately and quietly</span>
+              </label>
+              <label class="flex items-center gap-2.5 p-3 rounded-xl border border-slate-200 hover:bg-emerald-50/40 cursor-pointer transition-all">
+                <input type="radio" name="stressHelper" value="Gives me a couple minutes of quiet space" class="text-emerald-600">
+                <span class="text-xs sm:text-sm text-slate-700">Gives me a couple minutes of quiet space</span>
+              </label>
+              <label class="flex items-center gap-2.5 p-3 rounded-xl border border-slate-200 hover:bg-emerald-50/40 cursor-pointer transition-all">
+                <input type="radio" name="stressHelper" value="Breaks the task into bite-sized steps" class="text-emerald-600">
+                <span class="text-xs sm:text-sm text-slate-700">Breaks the task into bite-sized steps</span>
+              </label>
+              <label class="flex items-center gap-2.5 p-3 rounded-xl border border-slate-200 hover:bg-emerald-50/40 cursor-pointer transition-all">
+                <input type="radio" name="stressHelper" value="Lets me team up with a classmate" class="text-emerald-600">
+                <span class="text-xs sm:text-sm text-slate-700">Lets me team up with a classmate</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Final note to teacher -->
+          <div>
+            <label class="block text-sm font-semibold text-slate-800 mb-1" for="teacherNote">
+              Is there anything else you want your teacher to know about you? (Private) 💌
+            </label>
+            <textarea id="teacherNote" name="teacherNote" rows="3" placeholder="Anything from allergies, favorite snacks, seating needs, or things that help you succeed..."
+              class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm resize-none"></textarea>
+          </div>
+        </div>
+      </section>
+
+      <!-- Navigation & Action Buttons Bar -->
+      <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-sm flex items-center justify-between gap-3">
+        <button type="button" id="prevStepBtn" class="px-5 py-2.5 rounded-xl border border-slate-300 hover:bg-slate-50 font-semibold text-sm text-slate-700 transition-all flex items-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed" disabled>
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+          <span>Back</span>
+        </button>
+
+        <div class="flex items-center gap-3">
+          <button type="button" id="nextStepBtn" class="px-6 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold text-sm shadow-md shadow-brand-500/20 transition-all flex items-center gap-2">
+            <span>Next Step</span>
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+          </button>
+
+          <button type="submit" id="submitFormBtn" class="px-7 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm shadow-md shadow-emerald-500/25 transition-all flex items-center gap-2 hidden">
+            <span id="submitBtnLabel">Submit Survey 🎉</span>
+          </button>
+        </div>
+      </div>
+    </form>
+
+    <!-- Completion / Thank You Screen (Hidden Initially) -->
+    <div id="successCard" class="hidden bg-white rounded-3xl p-8 sm:p-12 border border-slate-200 shadow-xl text-center max-w-xl mx-auto my-6 animate-fade-in">
+      <div class="w-20 h-20 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-5 text-4xl shadow-inner animate-bounce">
+        🎉
+      </div>
+      <span class="inline-block bg-emerald-50 text-emerald-700 text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full mb-3">All Done!</span>
+      <h2 class="text-3xl font-display font-extrabold text-slate-900">You're Officially In!</h2>
+      <p class="text-slate-600 mt-2 text-sm sm:text-base leading-relaxed">
+        Thank you, <span id="submittedStudentName" class="font-bold text-slate-800">friend</span>! Your responses have been saved. We're going to have an incredible 7th grade year together.
+      </p>
+
+      <!-- Digital Grade 7 VIP Badge -->
+      <div class="mt-8 p-6 rounded-2xl bg-gradient-to-tr from-slate-900 to-indigo-950 text-white shadow-lg text-left relative overflow-hidden">
+        <div class="flex items-center justify-between mb-4">
+          <div class="text-xs font-mono uppercase tracking-widest text-indigo-300">Grade 7 Crew • VIP Pass</div>
+          <div class="text-lg">⭐</div>
+        </div>
+        <div class="text-xl font-bold font-display" id="badgeStudentName">Student Name</div>
+        <div class="text-xs text-slate-300 mt-1" id="badgeLearningStyle">Ready to conquer Grade 7</div>
+        <div class="mt-4 pt-3 border-t border-slate-700 flex justify-between items-center text-[11px] text-slate-400">
+          <span>School Year 2026-2027</span>
+          <span class="text-emerald-400 font-medium">● Confirmed</span>
+        </div>
+      </div>
+
+      <div class="mt-8 flex justify-center">
+        <button type="button" id="fillAnotherBtn" class="px-5 py-2.5 rounded-xl border border-slate-200 text-slate-700 text-xs font-bold hover:bg-slate-50 transition-all">
+          Submit Another Response
+        </button>
+      </div>
+    </div>
+  </main>
+
+  <!-- Custom Notification Toast -->
+  <div id="customToast" class="fixed bottom-6 right-6 z-50 bg-slate-900 text-white px-5 py-3 rounded-2xl shadow-xl border border-slate-700 text-xs font-medium flex items-center gap-2 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none">
+    <span id="toastIcon">✨</span>
+    <span id="toastMessage">Notification message</span>
+  </div>
+
+  <!-- Clean Footer -->
+  <footer class="mt-12 border-t border-slate-200 bg-white py-6 text-center text-xs text-slate-400">
+    <div class="max-w-3xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
+      <div>Grade 7 Welcome Check-In</div>
+      <div>Designed for Middle School Students ✨</div>
+    </div>
+  </footer>
+
+  <script>
+    /* ==========================================================================
+       TEACHER CONFIGURATION:
+       Paste your Google Apps Script Web App URL below to automatically save all
+       responses directly to your Google Sheet!
+       ========================================================================== */
+    const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbyQ1qvSuUC18WoC0ixSnjA5IdC5lhZ-lSiQXAXRAWzMbaOLnlPAt0ZUA1Rn1zr0bz1Sig/exec"; 
+
+    // State management
+    let currentStep = 0;
+    const totalSteps = 4;
+    let isSinglePageView = false;
+
+    // DOM Elements
+    const form = document.getElementById('grade7SurveyForm');
+    const prevBtn = document.getElementById('prevStepBtn');
+    const nextBtn = document.getElementById('nextStepBtn');
+    const submitBtn = document.getElementById('submitFormBtn');
+    const submitBtnLabel = document.getElementById('submitBtnLabel');
+    const stepCounter = document.getElementById('stepCounter');
+    const progressBar = document.getElementById('progressBar');
+    const progressPercentage = document.getElementById('progressPercentage');
+    const progressContainer = document.getElementById('progressContainer');
+    const viewToggleBtn = document.getElementById('viewToggleBtn');
+    const viewToggleLabel = document.getElementById('viewToggleLabel');
+    const successCard = document.getElementById('successCard');
+    const fillAnotherBtn = document.getElementById('fillAnotherBtn');
+
+    // Update step UI in wizard mode
+    function updateStepView() {
+      if (isSinglePageView) return;
+
+      // Toggle sections
+      for (let i = 0; i < totalSteps; i++) {
+        const sec = document.getElementById(`step-section-${i}`);
+        const pill = document.getElementById(`pill-${i}`);
+        if (sec) {
+          if (i === currentStep) {
+            sec.classList.remove('hidden');
+          } else {
+            sec.classList.add('hidden');
+          }
+        }
+        if (pill) {
+          if (i === currentStep) {
+            pill.className = 'step-pill cursor-pointer p-2 rounded-xl bg-blue-50 border border-blue-300 text-brand-700 font-bold text-xs shadow-sm transition-all';
+          } else if (i < currentStep) {
+            pill.className = 'step-pill cursor-pointer p-2 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-700 font-medium text-xs transition-all';
+          } else {
+            pill.className = 'step-pill cursor-pointer p-2 rounded-xl bg-slate-50 border border-transparent text-slate-400 font-medium text-xs transition-all';
+          }
+        }
+      }
+
+      // Update progress bar
+      const progress = Math.round(((currentStep + 1) / totalSteps) * 100);
+      progressBar.style.width = `${progress}%`;
+      progressPercentage.textContent = `${progress}% Complete`;
+      stepCounter.textContent = `Section ${currentStep + 1} of ${totalSteps}`;
+
+      // Update button visibility
+      prevBtn.disabled = currentStep === 0;
+      if (currentStep === totalSteps - 1) {
+        nextBtn.classList.add('hidden');
+        submitBtn.classList.remove('hidden');
+      } else {
+        nextBtn.classList.remove('hidden');
+        submitBtn.classList.add('hidden');
+      }
+
+      // Smooth scroll to top of form
+      window.scrollTo({ top: Math.max(0, form.offsetTop - 80), behavior: 'smooth' });
+    }
+
+    // Validation for step 1
+    function validateStep(step) {
+      if (step === 0) {
+        const nameInput = document.getElementById('fullName');
+        if (!nameInput.value.trim()) {
+          nameInput.focus();
+          showToast('⚠️ Please enter your name to get started!');
+          nameInput.classList.add('border-rose-400', 'ring-2', 'ring-rose-200');
+          setTimeout(() => nameInput.classList.remove('border-rose-400', 'ring-2', 'ring-rose-200'), 2500);
+          return false;
+        }
+      }
+      return true;
+    }
+
+    // Step navigation event handlers
+    nextBtn.addEventListener('click', () => {
+      if (validateStep(currentStep)) {
+        if (currentStep < totalSteps - 1) {
+          currentStep++;
+          updateStepView();
+        }
+      }
+    });
+
+    prevBtn.addEventListener('click', () => {
+      if (currentStep > 0) {
+        currentStep--;
+        updateStepView();
+      }
+    });
+
+    // Allow clicking on step pills
+    for (let i = 0; i < totalSteps; i++) {
+      const pill = document.getElementById(`pill-${i}`);
+      if (pill) {
+        pill.addEventListener('click', () => {
+          if (!isSinglePageView) {
+            if (i > currentStep && !validateStep(currentStep)) return;
+            currentStep = i;
+            updateStepView();
+          }
+        });
+      }
+    }
+
+    // Toggle between Single Page and Multi-Step Wizard
+    viewToggleBtn.addEventListener('click', () => {
+      isSinglePageView = !isSinglePageView;
+      if (isSinglePageView) {
+        viewToggleLabel.textContent = "Step-by-Step";
+        progressContainer.classList.add('hidden');
+        prevBtn.classList.add('hidden');
+        nextBtn.classList.add('hidden');
+        submitBtn.classList.remove('hidden');
+
+        // Show all sections
+        for (let i = 0; i < totalSteps; i++) {
+          const sec = document.getElementById(`step-section-${i}`);
+          if (sec) sec.classList.remove('hidden');
+        }
+        showToast('Switched to Single Page View');
+      } else {
+        viewToggleLabel.textContent = "All Questions";
+        progressContainer.classList.remove('hidden');
+        prevBtn.classList.remove('hidden');
+        updateStepView();
+        showToast('Switched to Step-by-Step View');
+      }
+    });
+
+    // Form Submission
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      // Check required name
+      const nameInput = document.getElementById('fullName');
+      if (!nameInput.value.trim()) {
+        currentStep = 0;
+        updateStepView();
+        nameInput.focus();
+        showToast('⚠️ Please write your name first!');
+        return;
+      }
+
+      // Disable button and show spinner
+      submitBtn.disabled = true;
+      submitBtnLabel.textContent = "Saving responses... 🚀";
+
+      // Collect values
+      const formData = new FormData(form);
+      const favSubjects = formData.getAll('favSubjects');
+      const studentSubmission = {
+        fullName: formData.get('fullName') || '',
+        preferredName: formData.get('preferredName') || '',
+        birthMonth: formData.get('birthMonth') || '',
+        birthDay: formData.get('birthDay') || '',
+        favSubjects: favSubjects,
+        challengingSubject: formData.get('challengingSubject') || '',
+        learningStyle: formData.get('learningStyle') || '',
+        seating: formData.get('seating') || '',
+        hobbies: formData.get('hobbies') || '',
+        favoriteMedia: formData.get('favoriteMedia') || '',
+        favoriteGameMovie: formData.get('favoriteGameMovie') || '',
+        funFact: formData.get('funFact') || '',
+        dreamSuperpower: formData.get('dreamSuperpower') || '',
+        excitedAbout: formData.get('excitedAbout') || '',
+        nervousAbout: formData.get('nervousAbout') || '',
+        stressHelper: formData.get('stressHelper') || '',
+        teacherNote: formData.get('teacherNote') || ''
+      };
+
+      // If Google Sheet URL is configured, post in real-time
+      if (GOOGLE_SHEET_URL && GOOGLE_SHEET_URL.trim().startsWith('http')) {
+        try {
+          await fetch(GOOGLE_SHEET_URL.trim(), {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(studentSubmission)
+          });
+        } catch (err) {
+          console.warn("Could not post to Google Sheet:", err);
+        }
+      }
+
+      // Display customized success screen & VIP pass
+      const displayName = studentSubmission.preferredName.trim() || studentSubmission.fullName;
+      document.getElementById('submittedStudentName').textContent = displayName;
+      document.getElementById('badgeStudentName').textContent = displayName;
+      document.getElementById('badgeLearningStyle').textContent = `Superpower: ${studentSubmission.dreamSuperpower || 'Grade 7 Champion'}`;
+
+      form.classList.add('hidden');
+      progressContainer.classList.add('hidden');
+      document.getElementById('heroCard').classList.add('hidden');
+      successCard.classList.remove('hidden');
+
+      // Trigger Confetti celebration
+      triggerConfetti();
+      showToast('🎉 Survey submitted successfully!');
+
+      // Reset submit button state
+      submitBtn.disabled = false;
+      submitBtnLabel.textContent = "Submit Survey 🎉";
+    });
+
+    function triggerConfetti() {
+      if (typeof confetti === 'function') {
+        confetti({
+          particleCount: 90,
+          spread: 75,
+          origin: { y: 0.6 }
+        });
+        setTimeout(() => {
+          confetti({ particleCount: 50, angle: 60, spread: 55, origin: { x: 0 } });
+          confetti({ particleCount: 50, angle: 120, spread: 55, origin: { x: 1 } });
+        }, 300);
+      }
+    }
+
+    fillAnotherBtn.addEventListener('click', () => {
+      form.reset();
+      currentStep = 0;
+      form.classList.remove('hidden');
+      if (!isSinglePageView) progressContainer.classList.remove('hidden');
+      document.getElementById('heroCard').classList.remove('hidden');
+      successCard.classList.add('hidden');
+      updateStepView();
+    });
+
+    // Custom Toast function
+    let toastTimeout;
+    function showToast(message) {
+      const toast = document.getElementById('customToast');
+      const toastMsg = document.getElementById('toastMessage');
+      toastMsg.textContent = message;
+      toast.classList.remove('translate-y-20', 'opacity-0');
+      toast.classList.add('translate-y-0', 'opacity-100');
+
+      clearTimeout(toastTimeout);
+      toastTimeout = setTimeout(() => {
+        toast.classList.add('translate-y-20', 'opacity-0');
+        toast.classList.remove('translate-y-0', 'opacity-100');
+      }, 3000);
+    }
+
+    // Initial render
+    updateStepView();
+  </script>
+</body>
+</html>
